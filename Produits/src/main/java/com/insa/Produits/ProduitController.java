@@ -23,6 +23,9 @@ public class ProduitController {
         return produitRepository.save(body);
     }
 
+    @RequestMapping(value = "/create_list", method = RequestMethod.POST)
+    public List<Produit> createMultipleProduits(@RequestBody List<Produit> body){ return produitRepository.saveAll(body);}
+
     @PatchMapping("/patch/{id}")
     public ResponseEntity<Produit> updateProduct(@PathVariable String id, @RequestBody Produit product) {
         Optional<Produit> productOptional = produitRepository.findById(id);
