@@ -5,7 +5,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(value = "/commandes")
+@CrossOrigin(origins = "http://localhost:8888")
+@RequestMapping(value = "/commande")
 public class CommandeController {
 
     @Autowired

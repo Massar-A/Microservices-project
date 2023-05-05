@@ -1,4 +1,4 @@
-package com.insa.Produits;
+package com.insa.zuul;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @EnableDiscoveryClient
 @SpringBootApplication
-public class ProduitsApplication {
+public class ZuulApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProduitsApplication.class, args);
+		SpringApplication.run(ZuulApplication.class, args);
 	}
 
 }

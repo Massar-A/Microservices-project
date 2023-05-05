@@ -8,6 +8,7 @@ import com.insa.Paiement.Exception.PaiementExistantException;
 import com.insa.Paiement.Exception.PaiementImpossibleException;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:8888")
 public class PaiementController {
     private final PaiementDao paiementDao;
 
