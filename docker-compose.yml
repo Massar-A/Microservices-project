@@ -2,8 +2,122 @@ version: '3.7'
 
 services:
   mongo:
-    container_name: mongodb
     image: mongo:latest
     restart: always
     ports:
       - 27017:27017
+    networks:
+      - mynet
+  
+  config:
+    image: myapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 7777:7777
+    depends_on:
+      - mongo
+    networks:
+      - mynet
+
+  eureka:
+    image: myapp2:latest
+    build:
+      context: .
+      dockerfile: Dockerfile2
+    ports:
+      - 8761:8761
+    depends_on:
+      - mongo
+      - config
+    command: sh -c "sleep 10 && java -jar eureka-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+
+  commande:
+    image: myapp3:latest
+    build:
+      context: .
+      dockerfile: Dockerfile3
+    ports:
+      - "8900:8900"
+    depends_on:
+      - mongo
+      - config
+      - eureka
+    command: sh -c "sleep 30 && java -jar Commande-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+
+  paiement:
+    image: myapp4:latest
+    build:
+      context: .
+      dockerfile: Dockerfile4
+    ports:
+      - "8901:8901"
+    depends_on:
+      - mongo
+      - config
+      - eureka
+    command: sh -c "sleep 30 && java -jar Paiement-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+
+  produits:
+    image: myapp5:latest
+    build:
+      context: .
+      dockerfile: Dockerfile5
+    ports:
+      - "8902:8902"
+    depends_on:
+      - mongo
+      - config
+      - eureka
+    command: sh -c "sleep 30 && java -jar Produits-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+
+  zuul:
+    image: myapp6:latest
+    build:
+      context: .
+      dockerfile: Dockerfile6
+    ports:
+      - "8762:8762"
+    depends_on:
+      - mongo
+      - config
+      - eureka
+      - commande
+      - paiement
+      - produits
+    command: sh -c "sleep 60 && java -jar zuul-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+
+  client:
+    image: myapp7:latest
+    build:
+      context: .
+      dockerfile: Dockerfile7
+    ports:
+      - "8888:8888"
+    depends_on:
+      - mongo
+      - config
+      - eureka
+      - commande
+      - paiement
+      - produits
+    command: sh -c "sleep 60 && java -jar Client-0.0.1-SNAPSHOT.jar"
+    networks:
+      - mynet
+  
+  
+
+networks:
+  mynet:
+    driver: bridge

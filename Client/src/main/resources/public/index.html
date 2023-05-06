@@ -40,7 +40,7 @@
     $(function () {
         $("#header").load("../layout/header.html");
         $("#footer").load("../layout/footer.html");
-        $.get("http://localhost:8762/produits/find_all_products", function (data) {
+        $.get("http://zuul:8762/produits/find_all_products", function (data) {
             data[0].nom
             $.each(data, function () {
 
@@ -125,7 +125,7 @@
             console.log(data)
             $.ajax({
                 type: 'POST',
-                url: 'http://localhost:8762/commande/create',
+                url: 'http://zuul:8762/commande/create',
                 data: JSON.stringify(data),
                 contentType: 'application/json',
                 success: function(response) {

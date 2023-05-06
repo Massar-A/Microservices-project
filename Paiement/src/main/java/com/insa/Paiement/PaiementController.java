@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 
 @RestController
 @RequestMapping(value = "/paiement")
-@CrossOrigin(origins = "http://localhost:8888")
+@CrossOrigin(origins = "*")
 public class PaiementController {
     private final PaiementDao paiementDao;
 
