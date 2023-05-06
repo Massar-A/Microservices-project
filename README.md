@@ -68,6 +68,10 @@ Allez sur Postman et envoyez une requête à ```http://localhost:8081/produits/c
     }
 ]
 ```
-### c. Problèmes avec CORS
+
+### c. Architecture
+
+![](./architecture.png)
+### d. Problèmes avec CORS
 
 Malgré le bon fonctionnement de nos microservices, une fois intégrés à Docker, le Client ne peut plus faire de requêtes aux microservices via l'API gateway. Nous avons tenté de multiples techniques afin d'autoriser les requêtes mais rien ne semblait fonctionner.
