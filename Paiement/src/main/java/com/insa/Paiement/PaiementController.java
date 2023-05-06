@@ -1,5 +1,8 @@
 package com.insa.Paiement;
 
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,7 +10,14 @@ import org.springframework.web.bind.annotation.*;
 import com.insa.Paiement.Exception.PaiementExistantException;
 import com.insa.Paiement.Exception.PaiementImpossibleException;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 @RestController
+@RequestMapping(value = "/paiement")
 @CrossOrigin(origins = "http://localhost:8888")
 public class PaiementController {
     private final PaiementDao paiementDao;
@@ -16,8 +26,8 @@ public class PaiementController {
         this.paiementDao = paiementDao;
     }
 
-    @PostMapping(value = "/paiement")
-    public ResponseEntity<Paiement>  payerUneCommande(@RequestBody Paiement paiement){
+    @RequestMapping(value = "/payer", method = RequestMethod.POST)
+    public ResponseEntity<Paiement>  payerUneCommande(@RequestBody Paiement paiement) throws IOException, InterruptedException {
         //Vérifions s'il y a déjà un paiement enregistré pour cette commande
         Paiement paiementExistant = paiementDao.findByidCommande(paiement.getIdCommande());
         if(paiementExistant != null) throw new PaiementExistantException("Cette commande est déjà payée");
@@ -28,9 +38,6 @@ public class PaiementController {
 
         if(nouveauPaiement == null) throw new PaiementImpossibleException("Erreur, impossible d'établir le paiement, réessayez plus tard");
 
-
-
-        //TODO Nous allons appeler le Microservice Commandes ici pour lui signifier que le paiement est accepté
         return new ResponseEntity<Paiement>(nouveauPaiement, HttpStatus.CREATED);
 
     }

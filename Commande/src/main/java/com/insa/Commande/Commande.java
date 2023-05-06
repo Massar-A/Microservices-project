@@ -18,11 +18,22 @@ public class Commande {
 
     private Date dateCommande;
 
-    public Commande(String user, String transaction, List<String> products) {
+    private boolean paid;
+
+    public Commande(String user, List<String> products) {
         this.user = user;
-        this.transaction = transaction;
+        this.transaction = null;
         this.products = products;
         this.dateCommande = new Date();
+        this.paid=false;
+    }
+
+    public boolean isPaid() {
+        return paid;
+    }
+
+    public void setPaid(boolean paid) {
+        this.paid = paid;
     }
 
     public String get_id() {

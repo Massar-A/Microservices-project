@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Liste des produits</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-          crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
 </head>
 <body class="d-flex flex-column h-100">
 <div id="header"></div>
@@ -14,12 +12,31 @@
     <h1>Toutes nos tartes</h1>
     <div id="liste" class="row"></div>
 </div>
+<div class="dialog-container">
+    <div class="dialog">
+        <h2>Panier</h2>
+        <ul id="panier-liste"></ul>
+        <h4>Total : <span id="prix-total">0.00€</span></h4>
+        <button id="payer" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalPaiement">Passer la commande</button>
+        <form id="formulaire-paiement" class="d-none">
+            <div class="form-group">
+                <label for="card-number">Numéro de carte bancaire</label>
+                <input type="text" class="form-control" id="card-number" placeholder="Numéro de carte bancaire">
+            </div>
+        </form>
+        <button id="payer-commande" type="button" class="btn btn-primary d-none">Payer la commande</button>
+        <button id="cancel-btn" type="button" class="btn btn-secondary d-none">Annuler</button>
+    </div>
+</div>
+
 <div id="footer" class="footer mt-auto py-3 bg-light text-center"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js">
 </script>
 <script>
+    $("#payer").hide()
+    var panier = [];
+    var total = 0;
     $(function () {
         $("#header").load("../layout/header.html");
         $("#footer").load("../layout/footer.html");
@@ -30,16 +47,122 @@
                 $("#liste").append(
                     '<div class="col-lg-6 col-xl-4">' +
                     '<div class="card my-2">'
-                    + '<div class="card-body">'
+                    + '<div class="card-body" id="'+this.id+'">'
                     + '<h3 class="card-title">' + this.nom + '</h3>'
-                    + '<p class="card-text">' + this.prix + '</em></p>'
-                    + '<a href="games/detailsGame.html?id=' + this.id + '" class="btn btn-primary">Voir plus</a>'
+                    + '<p class="card-text">' + this.description + '</em></p>'
+                    + '<p class="card-text">' + this.prix.toFixed(2) + '€</em></p>'
+                    + '<button id="ajouter" class="btn btn-primary ajouter">Ajouter au panier</button>'
                     + '</div>'
                     + '</div>'
                 );
             });
         });
     });
+
+    $(document).on('click', ".ajouter", function (){
+        // Récupérer les informations de l'élément sélectionné
+        var id = $(this).closest(".card-body").attr("id");
+        var nom = $(this).closest(".card-body").find(".card-title").text();
+        var prix = parseFloat($(this).closest(".card-body").find(".card-text:last").text().replace("€", ""));
+        console.log(nom+"ajouté au panier")
+        // Ajouter l'élément au tableau du panier
+        panier.push({ id: id, nom: nom, prix: prix });
+        $('#panier-liste').append('<li>' +
+            '<span>'+nom+'</span> : '
+            + '<span>'+prix.toFixed(2)+'€</span>'
+            + '<button type="button" class="btn btn-danger supprimer"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">\n' +
+            '  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>\n' +
+            '  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>\n' +
+            '</svg></button>'
+            + '</li>')
+        total += prix;
+        $('#prix-total').text(total.toFixed(2) + '€');
+        if (panier.length > 0) {
+            $('#payer').show();
+        } else {
+            $('#payer').hide();
+        }
+        console.log(panier)
+    })
+
+
+    $(document).on('click', ".supprimer", function (){
+        var li = $(this).closest('li');
+        var nom = li.find('span:first').text();
+        var prix = parseFloat(li.find('span:last').text());
+        console.log(nom+" supprimé du panier");
+        // Retirer l'élément de la liste
+        li.remove();
+        // Retirer l'élément du tableau panier
+        var index = panier.findIndex(function (element) {
+            return element.nom === nom && element.prix === prix;
+        });
+        if (index !== -1) {
+            panier.splice(index, 1);
+        }
+        // Mettre à jour le prix total et afficher le bouton "Payer"
+        total = panier.reduce(function (acc, element) {
+            return acc + element.prix;
+        }, 0);
+        $('#prix-total').text(total.toFixed(2) + '€');
+        if (panier.length > 0) {
+            $('#payer').show();
+        } else {
+            $('#payer').hide();
+        }
+    });
+
+    $(document).ready(function() {
+        $('#payer-commande').click(function() {
+            var products = [];
+            $(panier).each(function() {
+                products.push(this.id);
+            });
+            var data = {
+                user: generateRandomString(15),
+                products: products
+            };
+            console.log(data)
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:8762/commande/create',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    console.log(response);
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+    function generateRandomString(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    document.getElementById("payer").addEventListener("click", function() {
+        document.getElementById("payer").classList.add("d-none");
+        document.getElementById("payer-commande").classList.remove("d-none");
+        document.getElementById("cancel-btn").classList.remove("d-none");
+        document.getElementById("formulaire-paiement").classList.remove("d-none");
+    });
+
+    document.getElementById("cancel-btn").addEventListener("click", function() {
+        document.getElementById("payer").classList.remove("d-none");
+        document.getElementById("payer-commande").classList.add("d-none");
+        document.getElementById("cancel-btn").classList.add("d-none");
+        document.getElementById("formulaire-paiement").classList.add("d-none");
+    });
+
+
 </script>
 </body>
 </html>
